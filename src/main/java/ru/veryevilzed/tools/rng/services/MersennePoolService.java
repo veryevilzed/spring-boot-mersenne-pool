@@ -6,15 +6,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 public class MersennePoolService {
 
     final int poolSize;
+    final Random initRnd;
 
     public MersenneTwister createInstance() {
-        return new MersenneTwister(new Date().getTime());
+        return new MersenneTwister(initRnd.nextLong());
     }
 
     Queue<MersenneTwister> pool;
@@ -23,6 +25,7 @@ public class MersennePoolService {
 
     @Autowired
     public MersennePoolService(@Value("${mersenne.poolsize:100}") int poolSize) {
+        initRnd = new Random(new Date().getTime());
         this.poolSize = poolSize;
         pool = new ConcurrentLinkedQueue<>();
         for(int i=0;i<this.poolSize;i++)
